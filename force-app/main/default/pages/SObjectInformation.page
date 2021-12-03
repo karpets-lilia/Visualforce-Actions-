@@ -1,0 +1,116 @@
+<apex:page id="SObjestInformationPage" controller="SobjectInformationController">
+
+    <apex:form>
+        <apex:actionFunction name="rerenderTable" rerender="table" />
+        <apex:actionFunction id="showText" 
+                            name="textOutput"
+                            action="{!textOutput}"
+                            rerender="out">
+            <apex:param value="" name="newParam"/>
+        </apex:actionFunction>
+    </apex:form>
+
+    <script type="text/javascript"> 
+        function showText(message) {
+            textOutput(message);
+        }
+
+        function getRemoteSobject() {
+            let sobjName = document.getElementById('objectSearch').value;
+            console.log(sobjName);
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.SobjectInformationController.getAccount}', sobjName,
+                function(result,event) {
+                    rerenderTable();
+                    console.log(result);
+                    // if (event.status) {
+                    //     document.getElementById(
+                    //         'remoteSobjectId'
+                    //     ).innerHTML = result;
+                    //     console.log(result);
+                    //     document.getElementById(
+                    //         'remoteSobjectName'
+                    //     ).innerHTML = result.Name;
+
+                    //     document.getElementById(
+                    //         'remoteSobjectCreatedDate'
+                    //     ).innerHTML = result.CreatedDate;
+                    // } else if (event.type === 'exceptio') {
+                    //     document.getElementById(
+                    //         'responseErrors'
+                    //     ).innerHTML = event.message + "<br/>\n<pre>" + event.where + "</pre>";
+                    // } else {
+                    //     document.getElementById(
+                    //         'responseErrors'
+                    //     ).innerHTML = event.message;
+                    // }
+                },
+                {escape: true}
+            );
+        }
+    </script>
+
+    <input id="objectSearch" type="text"/>
+    <button onclick="getRemoteSobject()">Get SObject</button>
+    <div id="responseError"></div>
+
+    <apex:dataTable value="{!objectDetail}" var="obj" id="table"
+        rowClasses="odd,even" styleClass="tableClass">
+
+        <apex:column>
+            <apex:facet name="header">Id</apex:facet>
+            <apex:outputText value="{!obj.Id}"/>
+        </apex:column>
+    </apex:dataTable>
+
+      <!-- <apex:column>
+            <apex:facet name="header">Name</apex:facet>
+            <apex:facet name="footer">column footer</apex:facet>
+            <apex:outputText value="{!obj.Name}"/>
+        </apex:column>
+
+        <apex:column>
+            <apex:facet name="header">Created Date</apex:facet>
+            <apex:facet name="footer">column footer</apex:facet>
+            <apex:outputText value="{!obj.CreatedDate}"/>
+        </apex:column>
+
+    
+
+    <apex:pageBlock id="block">
+
+        <apex:pageBlockSection id="blockSection" columns="3">
+            <apex:pageBlockSectionItem id="firstItem">
+                <span id="remoteSobjName">Id:</span>
+                <span id="remoteSobjectId"/>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem id="secondItem">
+                <apex:outputText id="sobjNumEmployeesLabel">Name:</apex:outputText>
+                <span id="remoteSobjectName"/>
+            </apex:pageBlockSectionItem>
+
+            <pageBlockSectionItem id="thirdItem">
+                <apex:outputText id="sobjActiveLabel">Created Date:</apex:outputText>
+                <span id="remoteSobjectCreatedDate"/>
+            </pageBlockSectionItem>
+
+        </apex:pageBlockSection>
+        
+    </apex:pageBlock>-->
+
+
+    <apex:outputPanel id="out">
+        {!text}
+    </apex:outputPanel>
+
+    <apex:form>
+    <apex:commandButton title="one" value="Button1" 
+                    onclick="showText(this.title); return false;"/>
+    <apex:commandButton title="two" value="Button2" 
+                    onclick="showText(this.title); return false;"/>
+    <apex:commandButton title="three" value="Button3" 
+                    onclick="showText(this.title); return false;"/>
+    </apex:form>
+</apex:page>
