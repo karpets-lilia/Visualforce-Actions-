@@ -98,7 +98,6 @@
     <apex:form id="formThree" style="display:block">
         <apex:pageBlock title="Redirect to other pages" >
             <apex:pageBlockButtons location="bottom">
-               <!-- <apex:commandButton action="{!setParams}" value="Set Param"/><br/>-->
                 <apex:commandButton action="{!redirectToShowContact}" value="Redirect to ShowContact page"/>
                 <apex:commandButton action="{!redirectToShowDataTableContacts}" value="Redirect to ShowDataTableContacts page"/>
                 <apex:commandButton action="{!redirectToContactDescription}" value="Redirect to ContactDescription page"/><br/>
@@ -109,11 +108,11 @@
             
             <apex:pageBlock title="Enter Parameter">
                 <apex:inputText value="{!inputText1}" style="float:left" />
-                <apex:commandButton action="{!setParams1}" value="Set First Param"/><br/>
+                <apex:commandButton action="{!setParams}" value="Set First Param"/><br/>
                 <apex:inputText value="{!inputText2}" style="float:left"/>
-                <apex:commandButton action="{!setParams2}" value="Set Second Param"/><br/>
+                <apex:commandButton action="{!setParams}" value="Set Second Param"/><br/>
                 <apex:inputText value="{!inputText3}" style="float:left"/>
-                <apex:commandButton action="{!setParams3}" value="Set Third Param"/><br/>
+                <apex:commandButton action="{!setParams}" value="Set Third Param"/><br/>
             </apex:pageBlock>
         </apex:pageBlock>
         

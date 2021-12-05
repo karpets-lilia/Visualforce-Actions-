@@ -2,11 +2,15 @@ global with sharing class SobjectInformationController {
     String textValue; 
     public String sobjName {get; set; }
     public static List<SObject> objectDetail {get; set; }
-    public String inputText1 {get;set;}
-    public String inputText2 {get;set;}
-    public String inputText3 {get;set;}
+    public String inputText1 {get; set; }
+    public String inputText2 {get; set; }
+    public String inputText3 {get; set; }
 
-    public SobjectInformationController() {}
+    public SobjectInformationController() {
+        inputText1 = ApexPages.currentPage().getParameters().get('parameter1');
+        inputText2 = ApexPages.currentPage().getParameters().get('parameter2');
+        inputText3 = ApexPages.currentPage().getParameters().get('parameter3');
+    }
 
 
     @RemoteAction
@@ -25,26 +29,20 @@ global with sharing class SobjectInformationController {
         return null;
     }
 
-    public Pagereference setParams1() {
+    public Pagereference setParams() {
         Pagereference page = Page.SObjectInformation;
-        page.getParameters().put('parameter1', inputText1);
-        page.setRedirect(true);
-        return page;
-    }
+        if (String.isNotEmpty(inputText1)) {
+            page.getParameters().put('parameter1', inputText1);
+        }
 
-    public Pagereference setParams2() {
-        Pagereference page = Page.SObjectInformation;
-        page.getParameters().put('parameter1', inputText1);
-        page.getParameters().put('parameter2', inputText2);
-        page.setRedirect(true);
-        return page;
-    }
+        if (String.isNotEmpty(inputText2)) {
+            page.getParameters().put('parameter2', inputText2);
+        }
 
-    public Pagereference setParams3() {
-        Pagereference page = Page.SObjectInformation;
-        page.getParameters().put('parameter1', inputText1);
-        page.getParameters().put('parameter2', inputText2);
-        page.getParameters().put('parameter3', inputText3);
+        if (String.isNotEmpty(inputText3)) {
+            page.getParameters().put('parameter3', inputText3);
+        }
+
         page.setRedirect(true);
         return page;
     }
