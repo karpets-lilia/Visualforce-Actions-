@@ -1,116 +1,129 @@
 <apex:page id="SObjestInformationPage" controller="SobjectInformationController">
-
-    <apex:form>
-        <apex:actionFunction name="rerenderTable" rerender="table" />
-        <apex:actionFunction id="showText" 
-                            name="textOutput"
-                            action="{!textOutput}"
-                            rerender="out">
-            <apex:param value="" name="newParam"/>
-        </apex:actionFunction>
-    </apex:form>
-
+    
+    
+    
     <script type="text/javascript"> 
         function showText(message) {
             textOutput(message);
         }
-
+        
         function getRemoteSobject() {
             let sobjName = document.getElementById('objectSearch').value;
-            console.log(sobjName);
-
             Visualforce.remoting.Manager.invokeAction(
-                '{!$RemoteAction.SobjectInformationController.getAccount}', sobjName,
+                '{!$RemoteAction.SobjectInformationController.getSObjectInformation}', sobjName,
                 function(result,event) {
-                    rerenderTable();
-                    console.log(result);
-                    // if (event.status) {
-                    //     document.getElementById(
-                    //         'remoteSobjectId'
-                    //     ).innerHTML = result;
-                    //     console.log(result);
-                    //     document.getElementById(
-                    //         'remoteSobjectName'
-                    //     ).innerHTML = result.Name;
-
-                    //     document.getElementById(
-                    //         'remoteSobjectCreatedDate'
-                    //     ).innerHTML = result.CreatedDate;
-                    // } else if (event.type === 'exceptio') {
-                    //     document.getElementById(
-                    //         'responseErrors'
-                    //     ).innerHTML = event.message + "<br/>\n<pre>" + event.where + "</pre>";
-                    // } else {
-                    //     document.getElementById(
-                    //         'responseErrors'
-                    //     ).innerHTML = event.message;
-                    // }
-                },
-                {escape: true}
-            );
+                    if(event.status) {
+                        if(result.length>0) {
+                            let html='';
+                            for(let i=0; i < result.length; i++) {
+                                html += "<tr><td>"+result[i].Id+"</td><td>" 
+                                + result[i].Name+"</td><td>" 
+                                + result[i].CreatedDate+"</td></tr>";
+                            }
+                            document.getElementById('tbody').innerHTML = html;
+                        }
+                    }
+                }
+            )
         }
+
+        function displayPageblock(checkbox) {
+            console.log("displayCheckboxOne");
+            console.log(checkbox);
+            if (checkbox == 'checkbox1') {
+                let pageblockForm = document.getElementById("{!$Component.formOne}");
+                pageblockForm.style.display = (pageblockForm.style.display == "none") ? "block" : "none";
+            } else if (checkbox == 'checkbox2') {
+                let pageblockForm = document.getElementById("{!$Component.formTwo}");
+                pageblockForm.style.display = (pageblockForm.style.display == "none") ? "block" : "none";
+            } else if (checkbox == 'checkbox3') {
+                let pageblockForm = document.getElementById("{!$Component.formThree}");
+                pageblockForm.style.display = (pageblockForm.style.display == "none") ? "block" : "none";
+            }
+            
+        }
+    
     </script>
-
-    <input id="objectSearch" type="text"/>
-    <button onclick="getRemoteSobject()">Get SObject</button>
-    <div id="responseError"></div>
-
-    <apex:dataTable value="{!objectDetail}" var="obj" id="table"
-        rowClasses="odd,even" styleClass="tableClass">
-
-        <apex:column>
-            <apex:facet name="header">Id</apex:facet>
-            <apex:outputText value="{!obj.Id}"/>
-        </apex:column>
-    </apex:dataTable>
-
-      <!-- <apex:column>
-            <apex:facet name="header">Name</apex:facet>
-            <apex:facet name="footer">column footer</apex:facet>
-            <apex:outputText value="{!obj.Name}"/>
-        </apex:column>
-
-        <apex:column>
-            <apex:facet name="header">Created Date</apex:facet>
-            <apex:facet name="footer">column footer</apex:facet>
-            <apex:outputText value="{!obj.CreatedDate}"/>
-        </apex:column>
+    
+    <apex:form id="formOne" style="display:block">
+        <apex:pageBlock title="Output text">
+            <apex:actionFunction id="showText" 
+                                 name="textOutput"
+                                 action="{!textOutput}"
+                                 rerender="out">
+                <apex:param value="" name="newParam"/>
+            </apex:actionFunction>
+            
+            
+            <apex:outputPanel id="out">
+                {!text}
+            </apex:outputPanel>
+            
+            <apex:commandButton title="one" 
+                                value="Button1" 
+                                onclick="showText(this.title); return false;"/>
+            
+            <apex:commandButton title="two" 
+                                value="Button2" 
+                                onclick="showText(this.title); return false;"/>
+            
+            <apex:commandButton title="three" 
+                                value="Button3" 
+                                onclick="showText(this.title); return false;"/>
+            
+        </apex:pageBlock>
+    </apex:form>
+    
+    <apex:form id="formTwo" style="display:block">
+        <apex:pageBlock title="Show detailed information of the object">
+            <input id="objectSearch" type="text"/>
+            <button onclick="getRemoteSobject()">Get SObject</button>
+            <div id="responseError"></div>
+            
+            <center>
+                <P style="font-size:25px;">SObject Details</P> 
+                <table width="90%" border="1">
+                    <tr style="text-align:center;">
+                        <td><b>Id</b></td>
+                        <td><b>Name</b></td>
+                        <td><b>CreatedDate</b></td>
+                    </tr>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </center>
+        </apex:pageBlock>
+    </apex:form>
 
     
-
-    <apex:pageBlock id="block">
-
-        <apex:pageBlockSection id="blockSection" columns="3">
-            <apex:pageBlockSectionItem id="firstItem">
-                <span id="remoteSobjName">Id:</span>
-                <span id="remoteSobjectId"/>
-            </apex:pageBlockSectionItem>
-
-            <apex:pageBlockSectionItem id="secondItem">
-                <apex:outputText id="sobjNumEmployeesLabel">Name:</apex:outputText>
-                <span id="remoteSobjectName"/>
-            </apex:pageBlockSectionItem>
-
-            <pageBlockSectionItem id="thirdItem">
-                <apex:outputText id="sobjActiveLabel">Created Date:</apex:outputText>
-                <span id="remoteSobjectCreatedDate"/>
-            </pageBlockSectionItem>
-
-        </apex:pageBlockSection>
+    <apex:form id="formThree" style="display:block">
+        <apex:pageBlock title="Redirect to other pages" >
+            <apex:pageBlockButtons location="bottom">
+               <!-- <apex:commandButton action="{!setParams}" value="Set Param"/><br/>-->
+                <apex:commandButton action="{!redirectToShowContact}" value="Redirect to ShowContact page"/>
+                <apex:commandButton action="{!redirectToShowDataTableContacts}" value="Redirect to ShowDataTableContacts page"/>
+                <apex:commandButton action="{!redirectToContactDescription}" value="Redirect to ContactDescription page"/><br/>
+                <apex:commandButton action="{!redirectToSalesforceCom}" value="Redirect to Salesfoce page"/>
+                <apex:commandButton action="{!redirectToWorkbench}" value="Redirect to Workbench page"/>
+                <apex:commandButton action="{!redirectToPogodaBy}" value="Redirect to Pogoda.by page"/>
+            </apex:pageBlockButtons>
+            
+            <apex:pageBlock title="Enter Parameter">
+                <apex:inputText value="{!inputText1}" style="float:left" />
+                <apex:commandButton action="{!setParams1}" value="Set First Param"/><br/>
+                <apex:inputText value="{!inputText2}" style="float:left"/>
+                <apex:commandButton action="{!setParams2}" value="Set Second Param"/><br/>
+                <apex:inputText value="{!inputText3}" style="float:left"/>
+                <apex:commandButton action="{!setParams3}" value="Set Third Param"/><br/>
+            </apex:pageBlock>
+        </apex:pageBlock>
         
-    </apex:pageBlock>-->
-
-
-    <apex:outputPanel id="out">
-        {!text}
-    </apex:outputPanel>
-
-    <apex:form>
-    <apex:commandButton title="one" value="Button1" 
-                    onclick="showText(this.title); return false;"/>
-    <apex:commandButton title="two" value="Button2" 
-                    onclick="showText(this.title); return false;"/>
-    <apex:commandButton title="three" value="Button3" 
-                    onclick="showText(this.title); return false;"/>
+    </apex:form>
+    
+    <apex:form id="checkboxForm">
+        <apex:pageBlock title="CheckBox">
+            <apex:inputCheckbox title="checkbox1" selected="true" onchange="displayPageblock(this.title)" id="displayCheckboxOne"/>
+            <apex:inputCheckbox title="checkbox2" selected="true" onchange="displayPageblock(this.title)" id="displayCheckboxTwo"/>
+            <apex:inputCheckbox title="checkbox3" selected="true" onchange="displayPageblock(this.title)" id="displayCheckboxThree"/>
+        </apex:pageBlock>
     </apex:form>
 </apex:page>
